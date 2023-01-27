@@ -30,7 +30,7 @@ In this case, it is triggering a RemoteEvent called <code>Client-Client Communic
 
 ![Client-Client Pic](/Screenshots/client-client-ex6.png)<br>
 The **Client-Client-Handler** Script retrieves the RemoteEvent's name and sound effect properties.
-<br>
+<br><br>
 
 ![Client-Client Pic](/Screenshots/client-client-ex4.png)<br>
 In line 22, it retrieves that RemoteEvent from ReplicatedStorage and fires another client sending the targeted <code>player</code> and sound effect properties. <br><br>
@@ -39,7 +39,7 @@ In line 22, it retrieves that RemoteEvent from ReplicatedStorage and fires anoth
 The **Play Sound Effect** LocalScript is responsible for playing sound effects at the player's screen. It also includes the <code>SoundEffects</code> Sound instance, which also serves as collection of sound effects. In the client event, it retrieves the sound effect's name and volume. <br><br>
 
 ![Client-Client Pic](/Screenshots/client-client-ex7.png)<br>
-This script looks for a sound effect called **Button Clicked**. It sets <code>SoundEffects.SoundId</code> with Button Clicked's assetID and its volume to 1. Finally, the sound effect is played. 
+This script looks for a sound effect called **Button Clicked**. It sets <code>SoundEffects.SoundId</code> with Button Clicked's assetID and its volume to 1. Finally, the sound effect is played.<br><br> 
 
 ![Client-Client Diagram](/Screenshots/client-client-diagram3.png)<br>
 This diagram represents the example explained above.
