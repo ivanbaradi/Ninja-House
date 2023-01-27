@@ -16,7 +16,7 @@ local Client_Client_FUNC = ReplicatedStorage:FindFirstChild('Client-Client Commu
 	Parameter(s):
 	player => player who triggered this event (Player)
 	remoteEventName => name of the remote event to trigger (string)
-	object => collection of data (table)
+	object => any data
 ]]
 Client_Client_EVENT.OnServerEvent:Connect(function(player, remoteEventName, object)
 	ReplicatedStorage:FindFirstChild(remoteEventName):FireClient(player, object)
@@ -31,7 +31,7 @@ end)
 	Parameter(s):
 	player => player who invoked this function (Player)
 	remoteFuncName => name of the remote function to invoke (string)
-	object => collection of data (table)
+	object => any data
 ]]
 Client_Client_FUNC.OnServerInvoke = function(player, remoteFuncName, object)
 	return ReplicatedStorage:FindFirstChild(remoteFuncName):InvokeClient(player, object)
