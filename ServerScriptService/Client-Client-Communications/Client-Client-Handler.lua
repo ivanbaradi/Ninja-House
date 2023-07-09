@@ -11,7 +11,10 @@ local Client_Client_FUNC = ReplicatedStorage:FindFirstChild('Client-Client Commu
 
 
 
---[[Handles a one-way passage between the client, server, and another client
+--[[Handles a one-way passage between the client, server, and another client.
+	
+	If object is nil, then this server event will only pass the Player
+	object as the parameter. In other word, no object is passed.
 
 	Parameter(s):
 	player => player who triggered this event (Player)
@@ -19,14 +22,24 @@ local Client_Client_FUNC = ReplicatedStorage:FindFirstChild('Client-Client Commu
 	object => any data
 ]]
 Client_Client_EVENT.OnServerEvent:Connect(function(player, remoteEventName, object)
-	ReplicatedStorage:FindFirstChild(remoteEventName):FireClient(player, object)
+	
+	local TargetRemoteEvent = ReplicatedStorage:FindFirstChild(remoteEventName)
+	
+	if object ~= nil then
+		TargetRemoteEvent:FireClient(player, object)
+	else
+		TargetRemoteEvent:FireClient(player)
+	end
 end)
 
 
 
 --[[Handles a two-way passage between the client, server, and another client.
 	In most cases, the client that invokes the server expects a return of some
-	data from another client invoked by the server
+	data from another client invoked by the server.
+	
+	If object is nil, then this server invoke will only pass the Player
+	object as the parameter. In other word, no object is passed.
 
 	Parameter(s):
 	player => player who invoked this function (Player)
@@ -34,5 +47,10 @@ end)
 	object => any data
 ]]
 Client_Client_FUNC.OnServerInvoke = function(player, remoteFuncName, object)
-	return ReplicatedStorage:FindFirstChild(remoteFuncName):InvokeClient(player, object)
+	
+	local TargetRemoteFunction = ReplicatedStorage:FindFirstChild(remoteFuncName)
+	
+	if object ~= nil then return TargetRemoteFunction:InvokeClient(player, object) end
+	
+	return TargetRemoteFunction:InvokeClient(player)
 end
