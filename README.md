@@ -8,10 +8,15 @@ Ivan and Isabel's home. Feel free to come over to our place to stay, explore, re
 
 **App**: RobloxStudios
 
-## House Tour
+## Tour
 
-### Living Room
+### Interior
+
+#### Living Room
 ![Living Room](Screenshots/living-room.png)
 
-### Kitchen
+#### Kitchen
 ![Kitchen](Screenshots/kitchen.png)
+
+#### Gym
+![Kitchen](Screenshots/gym.png)

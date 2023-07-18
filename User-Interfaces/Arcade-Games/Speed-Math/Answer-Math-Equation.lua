@@ -34,20 +34,7 @@ function handler()
 	UserAnswer.Text = UserAnswer.Text:gsub("%s+", "")
 
 	--Player did not enter an answer at the gray textbox
-	if UserAnswer.Text == '' then
-
-		Client_Client:FireServer('Play Sound Effect', {
-			name = 'Warning',
-			volume = 1
-		})
-
-		Client_Client:FireServer('Announce to Player', {
-			text = 'Please input your answer at the gray box',
-			textColor = Color3.fromRGB(255, 251, 0)
-		})
-
-		return
-	end
+	if UserAnswer.Text == '' then return end
 
 	--Converts the user's answer from string to number
 	local userAnswerInt = tonumber(UserAnswer.Text)
