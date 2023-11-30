@@ -5,6 +5,7 @@
   - Living Room
   - Kitchen
   - Gym
+  - Game Room
 - Added player overhead UI with the player's username and Display Name
 - Added user interfaces
   - Song Dashboard
@@ -31,3 +32,4 @@
     - NH101 Rank - player's Ninja Heroes 101 group rank
     - Account Age - player's Roblox account age in days, weeks, and years
 - Added player leaderstats displaying the Roblox player's Display Name or username with their NH101 rank
+- Added Powerhouse Generator where players can use operators to enable or disable outdoor accessories
