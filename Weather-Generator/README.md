@@ -78,9 +78,8 @@ You can read the developer's **Collideable Particles Module** API documentation 
 
 ## Snow Weather Demo
 
-<video width="800" height="450" controls>
-    <source src="../Videos/snow-weather.mov" type="video/mp4">
-</video>
+<video width="630" height="300" src="../Videos/snow-weather.mov"></video>
+
 
 ## Sources
 
