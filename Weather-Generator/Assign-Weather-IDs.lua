@@ -1,1 +1,0 @@
-for i, Weather in pairs(script.Parent:WaitForChild('Weathers'):GetChildren()) do Weather.Name = 'Weather '..i end
