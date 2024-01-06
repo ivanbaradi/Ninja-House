@@ -78,8 +78,7 @@ You can read the developer's **Collideable Particles Module** API documentation 
 
 ## Snow Weather Demo
 
-<video width="630" height="300" src="../Videos/snow-weather.mov"></video>
-
+[![Watch the video](https://img.youtube.com/vi/1YowiFbioWg/hqdefault.jpg)](https://www.youtube.com/embed/1YowiFbioWg)
 
 ## Sources
 
