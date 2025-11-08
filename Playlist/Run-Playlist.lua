@@ -1,27 +1,24 @@
---ReplicatedStorage
-local ReplicatedStorage = game.ReplicatedStorage
---ServerStorage
-local ServerStorage = game.ServerStorage
+--Roblox Services
+ReplicatedStorage = game.ReplicatedStorage
+ServerStorage = game.ServerStorage
+MarketplaceService = game:GetService('MarketplaceService')
+FormatNumberToTime = game.ServerScriptService:FindFirstChild('Other Modules'):FindFirstChild('Format Number to Time')
+
 --Playlist
-local Playlist = script.Parent
---Gets the specified soundtrack genre
-local SoundtrackGenre = Playlist:FindFirstChild('Configuration'):FindFirstChild('Soundtrack Genre').Value
-local Soundtracks = Playlist:FindFirstChild('Soundtrack List'):FindFirstChild(SoundtrackGenre):GetChildren()
---Current Song
-local currentSongName = nil
---Curent Song Uploader
-local currentSongCreator = nil
---MarketPlaceService
-local MarketplaceService = game:GetService('MarketplaceService')
---'Format Number to Time' Bindable Event
-local FormatNumberToTime = game.ServerScriptService:FindFirstChild('Other Modules'):FindFirstChild('Format Number to Time')
+Playlist = script.Parent
+SoundtrackGenre = Playlist:FindFirstChild('Configuration'):FindFirstChild('Soundtrack Genre').Value
+Soundtracks = Playlist:FindFirstChild('Soundtrack List'):FindFirstChild(SoundtrackGenre):GetChildren()
+
+--Current Song Info
+currentSongName = nil
+currentSongCreator = nil
 
 --Events and Functions for updating song's attributes
-local UpdateTimePosition = ReplicatedStorage:FindFirstChild('Update Song Time Position')
-local UpdateName = ReplicatedStorage:FindFirstChild('Update Song Name')
-local UpdateTimeLength = ReplicatedStorage:FindFirstChild('Update Song Length')
-local UpdateCreator = ReplicatedStorage:FindFirstChild('Update Song Creator')
-local UpdateProgressBar = ReplicatedStorage:FindFirstChild('Update Song Progress Bar')
+UpdateTimePosition = ReplicatedStorage:FindFirstChild('Update Song Time Position')
+UpdateName = ReplicatedStorage:FindFirstChild('Update Song Name')
+UpdateTimeLength = ReplicatedStorage:FindFirstChild('Update Song Length')
+UpdateCreator = ReplicatedStorage:FindFirstChild('Update Song Creator')
+UpdateProgressBar = ReplicatedStorage:FindFirstChild('Update Song Progress Bar')
 
 --Gets the current song name to allow other scripts to use it
 ServerStorage:FindFirstChild('Get Current Song Name').OnInvoke = function()
@@ -36,6 +33,8 @@ ServerStorage:FindFirstChild('Get Current Song Creator').OnInvoke = function()
 	while not currentSongCreator do wait(.1) end
 	return currentSongCreator
 end
+
+
 
 --[[Gives song time to load and determines if the song can play
 
@@ -60,14 +59,16 @@ end
 --[[Initializes some parts of Song UI before the song starts playing
 
 	Parameter(s):
+		song: song object including its name and assetID
 		timeLength: time length of the song
 ]]
-function initializeUI(timeLength: number)
-	--Initializes song's time position to 0
+function initializeUI(song: IntValue, timeLength: number)
+	--print('Initializing UI for new song')
+	UpdateName:FireAllClients(song.Name)
+	UpdateCreator:FireAllClients(currentSongCreator)
+	UpdateTimeLength:FireAllClients(FormatNumberToTime:Invoke(timeLength))
 	UpdateTimePosition:FireAllClients('0:00')
-	--Resets song progress bar from all players' Song Dashboard UI
 	UpdateProgressBar:FireAllClients(0, timeLength)
-	
 end
 
 
@@ -82,14 +83,8 @@ end
 function playSong(song: IntValue, timePosition: number, timeLength: number)
 	
 	Playlist:Play()
-	print('Now playing '.."'"..song.Name.."'")
+	--print('Now playing '.."'"..song.Name.."'")
 	while timePosition < timeLength do
-
-		--Will need to constantly some UI components from Song Dashboard to be shown
-		UpdateName:FireAllClients(song.Name)
-		UpdateCreator:FireAllClients(currentSongCreator)
-		UpdateTimeLength:FireAllClients(FormatNumberToTime:Invoke(timeLength))
-
 		wait(1)
 		timePosition += 1		
 		UpdateTimePosition:FireAllClients(FormatNumberToTime:Invoke(timePosition))
@@ -105,6 +100,7 @@ while true do
 	--Randomly selects a song (soundtrack)
 	local song = Soundtracks[math.random(#Soundtracks)]
 	Playlist.SoundId = "rbxassetid://"..song.Value
+	--print("Loading '"..song.Name.."'")
 		
 	if canPlaySong() then
 		
@@ -124,7 +120,7 @@ while true do
 		local timeLength = math.ceil(Playlist.TimeLength)
 		--if Playlist.TimePosition ~= 0 then Playlist.TimePosition = 0 end --in case time position isn't zero
 		
-		initializeUI(timeLength)
+		initializeUI(song, timeLength)
 		playSong(song, timePosition, timeLength)
 	end
 end
