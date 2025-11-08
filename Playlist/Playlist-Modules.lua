@@ -2,8 +2,7 @@
 ReplicatedStorage = game.ReplicatedStorage
 FormatNumberToTime = game.ServerScriptService:FindFirstChild('Other Modules'):FindFirstChild('Format Number to Time')
 
---Playlist Modules
-Modules = script.Parent
+--Playlist
 Playlist = script:FindFirstAncestor('Playlist')
 
 --Events and Functions for updating song's attributes
@@ -19,7 +18,7 @@ UpdateTimeLength = ReplicatedStorage:FindFirstChild('Update Song Length')
 	Return(s):
 		boolean: flag of song validation
 ]]
-Modules:FindFirstChild('Can Play Song').OnInvoke = function() : boolean
+script:FindFirstChild('Can Play Song').OnInvoke = function() : boolean
 	local maxTime = 5 -- max time of song loading
 	local startTime = tick() -- start time song loading
 
@@ -33,7 +32,6 @@ Modules:FindFirstChild('Can Play Song').OnInvoke = function() : boolean
 end
 
 
-
 --[[Plays a new song
 
 	Parameter(s):
@@ -41,7 +39,7 @@ end
 		timePosition: time position of the song
 		timeLength: time length of the song
 ]]
-Modules:FindFirstChild('Play Song').OnInvoke = function(timePosition: number, timeLength: number)
+script:FindFirstChild('Play Song').OnInvoke = function(timePosition: number, timeLength: number)
 	
 	local SoundId = Playlist.SoundId -- previous SoundId
 	Playlist:Play()
@@ -63,11 +61,13 @@ end
 
 --[[Initializes some parts of Song UI before the song starts playing
 
+	TODO: Fix where UI gets updated when server starts
+
 	Parameter(s):
 		song: song object including its name and assetID
 		timeLength: time length of the song
 ]]
-Modules:FindFirstChild('Initialize UI').Event:Connect(function(Song: IntValue, timeLength: number, songCreator: string)
+script:FindFirstChild('Initialize UI').Event:Connect(function(Song: IntValue, timeLength: number, songCreator: string)
 	--print("Initializing UI for '"..song.Name)
 	UpdateName:FireAllClients(Song.Name)
 	UpdateCreator:FireAllClients(songCreator)

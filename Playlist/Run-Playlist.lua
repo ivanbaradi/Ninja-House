@@ -8,6 +8,9 @@ Playlist = script.Parent
 SoundtrackGenre = Playlist:FindFirstChild('Configuration'):FindFirstChild('Soundtrack Genre').Value
 Soundtracks = Playlist:FindFirstChild('Soundtrack List'):FindFirstChild(SoundtrackGenre):GetChildren()
 
+--Playlist Modules
+Modules = script:FindFirstChild('Playlist Modules')
+
 --Current Song Info
 currentSongName = nil
 currentSongCreator = nil
@@ -36,7 +39,7 @@ while true do
 	Playlist.SoundId = "rbxassetid://"..Song.Value
 	print("Loading '"..Song.Name.."'")
 		
-	if script:FindFirstChild('Can Play Song'):Invoke() then
+	if Modules:FindFirstChild('Can Play Song'):Invoke() then
 		
 		--Gets the name of the artist of the current song or the creator of it
 		--local Artist = song:GetAttribute('Artist')
@@ -54,7 +57,7 @@ while true do
 		local timeLength = math.ceil(Playlist.TimeLength)
 		--if Playlist.TimePosition ~= 0 then Playlist.TimePosition = 0 end --in case time position isn't zero
 		
-		script:FindFirstChild('Initialize UI'):Fire(Song, timeLength, currentSongCreator)
-		script:FindFirstChild('Play Song'):Invoke(timePosition, timeLength)
+		Modules:FindFirstChild('Initialize UI'):Fire(Song, timeLength, currentSongCreator)
+		Modules:FindFirstChild('Play Song'):Invoke(timePosition, timeLength)
 	end
 end
