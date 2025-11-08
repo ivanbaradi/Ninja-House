@@ -46,8 +46,13 @@ Modules:FindFirstChild('Play Song').OnInvoke = function(timePosition: number, ti
 	local SoundId = Playlist.SoundId -- previous SoundId
 	Playlist:Play()
 	
-	while timePosition < timeLength and SoundId == Playlist.SoundId do
+	while timePosition < timeLength do
+		
 		wait(1)
+		
+		--Terminates because the song has abruptly changed
+		if SoundId ~= Playlist.SoundId then return end
+		
 		timePosition += 1		
 		UpdateTimePosition:FireAllClients(FormatNumberToTime:Invoke(timePosition))
 		UpdateProgressBar:FireAllClients(timePosition, timeLength)
