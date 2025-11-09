@@ -35,7 +35,6 @@ end
 --[[Plays a new song
 
 	Parameter(s):
-		song: song object including its name and assetID
 		timePosition: time position of the song
 		timeLength: time length of the song
 ]]
@@ -64,8 +63,9 @@ end
 	TODO: Fix where UI gets updated when server starts
 
 	Parameter(s):
-		song: song object including its name and assetID
+		Song: song object including its name and assetID
 		timeLength: time length of the song
+		songCreator: song creator's name
 ]]
 script:FindFirstChild('Initialize UI').Event:Connect(function(Song: IntValue, timeLength: number, songCreator: string)
 	--print("Initializing UI for '"..song.Name)
