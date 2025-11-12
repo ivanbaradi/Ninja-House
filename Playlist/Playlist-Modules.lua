@@ -67,7 +67,7 @@ end
 		timeLength: time length of the song
 		songCreator: song creator's name
 ]]
-script:FindFirstChild('Initialize UI').Event:Connect(function(Song: IntValue, timeLength: number, songCreator: string)
+script:FindFirstChild('Initialize Song UI').Event:Connect(function(Song: IntValue, timeLength: number, songCreator: string)
 	--print("Initializing UI for '"..song.Name)
 	UpdateName:FireAllClients(Song.Name)
 	UpdateCreator:FireAllClients(songCreator)
