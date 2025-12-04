@@ -1,85 +1,206 @@
 # Weather Generator
 
-## Description
+**Weather Generator** enables weather in the game.
 
-At some point, there is going to be weather during the game especially during the holidays. It snows during December, but other types will be included in the future of the game.
+Unfortunately, Roblox Engine's ParticleEmitter makes particles go through parts. Fortunately, **ParticlesModuleExperimantal** ModuleScript by BubasGaming allows particles *(weather parts)* to collide with other Parts. I want to thank this person for creating this module.
 
-Unfortunately, Roblox Engine's ParticleEmitter makes particles go through BaseParts. Therefore, **ParticlesModuleExperimantal** ModuleScript by BubasGaming is installed to allow particles to collide with other BaseParts. I want to thank this person for creating this module.
+## Explorer
 
-## Model
+```text
+🗺️ Explorer
+├── 🌎 Workspace
+│   ├── ⚙️ Weather Generator
+│   │   ├── 📝 Assign Weather IDs
+│   │   └── 🌧️ Weathers
+│   │       ├── ☁️ Weather
+│   │       ├── ☁️ Weather
+│   │       ├── ☁️ ...
+│   │       └── ☁️ Weather n
+│   └── ⚪️ Collideable Particles  
+├── 📦 ReplicatedStorage
+│   └── 📁 Collideable Particle Actors
+│       └── ⚪️ Weather Actor
+│           └── 📝 Generate Collideable Weather Particles
+└── 👤 StarterPlayer
+    └── 📄 StarterPlayerScripts
+        └── 🧵 Weather Thread
+            └── 📝 Clone Weather Actors
+```
 
-To add weather in the game, I added parts that emit weather and group them into a model called **Weathers**. The reason why I can't create a very huge part is due to extreme lag that builds up during the game. Therefore, I have to duplicate smaller parts to prevent lag.
+**Notes:**
+- This is the explorer when the server is not running.
+- **n** is the the amount of weather parts so far.
+- **Weather Thread**, **Weather Actor**, and **Weather Particle(s)** are just placeholders for any type of weather thread such as snow and rain. For example, if the weather is rain, then Weather Thread is renamed respectively to **Rain Thread**.
 
-I parented **Weathers** to a model called **Weather Generator**. This generator is responsible for assigning all weather parts to distinct IDs, which will be later explained.
+## Example Usage
 
-**Weathers** is transparent. So, you won't see it in the game and is always located above the tallest object in the game.
-
-## Scripts
+Suppose that there is a snowy day in the game. Snow parts will need to be generated in the game.
 
 ### Assigning Weather IDs
 
-For this to work, I wrote a script called **Assigned-Weather-IDs**, which loops through all weather parts from **Weathers** model to rename them from <code>Weather</code> to <code>Weather 1...Weather n</code>, where *n* is the total amount of weather parts. This is so that each **Actor** is assigned to unique weather, which will be later explained. <br><br>
+```text
+🗺️ Explorer
+└── 🌎 Workspace
+    └── ⚙️ Weather Generator
+        ├── 📝 Assign Weather IDs
+        └── 🌧️ Weathers
+            ├── ☁️ Weather
+            ├── ☁️ Weather
+            └── ☁️ Weather
+```
 
-![Weather Generator](../Screenshots/weather-generator.png)
-<br>*Before the server starts*
+Let's say that there are three Weathers. Keep in mind that each **Weather Actor** must be assigned to corresponding **Weather** for this to work properly.
 
-I can add as many **Weather** parts as I want to, but it depends on how large the land is right now. Parts are 100x100 studs large and so I move each duplicated parts by 100 studs. <br><br>
+```lua
+for i, Weather in pairs(script.Parent:WaitForChild('Weathers'):GetChildren()) do Weather.Name = 'Weather '..i end
+```
 
-![Weather Generator 2](../Screenshots/weather-generator-2.png)
-<br>*After the server starts*
+**Assign Weather IDs** is responsible for renaming `Weather` to `Weather 1...Weather n` *(in this case `Weather 1...Weather 3`)*.
 
-### Cloning Weather Actors
 
-I followed through BubasGaming's tutorial to create collideable particles for creating the Weather Generator. According to the creator, we have to add the **Actor** instance to generate collideable particles. There are a total of 22 weather parts and therefore, 22 actors are to be cloned and parented under some weather thread. <br><br>
+```text
+🗺️ Explorer
+└── 🌎 Workspace
+    └── ⚙️ Weather Generator
+        ├── 📝 Assign Weather IDs
+        └── 🌧️ Weathers
+            ├── ☁️ Weather 1
+            ├── ☁️ Weather 2
+            └── ☁️ Weather 3
+```
 
-![Snow Actor](../Screenshots/snow-actor.png)
-<br>*Snow Actor*
+This is the explorer when the server starts.
 
-For this example, I want to create a snowy weather for the Christmas season. So I added an Actor instance named **Snow Actor** and parented under **Collideable Particle Actors**, which holds all collidebale particle actors. <br><br>
+### Clone Weather Actors
 
-![Clone Snow Actor](../Screenshots/clone-snow-actors.png)
-<br>*Clone Snow Actors LocalScript*
+```lua
+wait(1)
+local ReplicatedStorage = game.ReplicatedStorage
+local CollideableParticleActors = ReplicatedStorage:FindFirstChild('Collideable Particle Actors')
+local SnowThread = script.Parent
+local WeatherGenerator = workspace:WaitForChild('Weather Generator')
+local Weathers = WeatherGenerator:WaitForChild('Weathers')
 
-![Clone Snow Actor Code](../Screenshots/clone-snow-actors-code.png)
-<br>*Clone-Snow-Actors.lua*
+for i = 1, #Weathers:GetChildren() do
+	local SnowActor = CollideableParticleActors:FindFirstChild('Snow Actor'):Clone()
+	SnowActor:SetAttribute('EmmiterObject', 'Weather '..i)
+	SnowActor.Parent = SnowThread
+end
+```
 
-I wrote this script to clone snow actors to **Snow Thread** folder, because the folder contains attributes for the behavior of snow particles, which will be explained later on.
+Accordint to BubasGaming, **Actor** must be instantiated to create collideable particles *(weather particles)*. The amount of actors is <u>proportionate to the amount of Weather parts</u>. 
 
-![Clone Snow Actor 2](../Screenshots/clone-snow-actors-2.png)
-<br>*Cloned Snow Actors when the client joins the server*
+```text
+🗺️ Explorer
+└── 👤 StarterPlayer
+    └── 📄 StarterPlayerScripts
+        └── 🧵 Snow Thread
+            ├── ⚪️ Snow Actor
+            ├── ⚪️ Snow Actor
+            ├── ⚪️ Snow Actor
+            └── 📝 Clone Snow Actors
+```
 
-Apparently, I have to run the game as the client since I created a LocalScript *(not Script)*. As you can see the amount of **Snow Actors** is the same as weather parts if you do the counting.
+When the server starts, the three **Snow Actors** are placed under **Snow Thread** since there are three Weather parts.
 
 ### Generating Collideable Weather Particles
 
-I took my time to play around the developer's experience on generating particles. I noticed that all particles are parented under a folder that has a collection of them that are present in the game. In my game, I named it **Collideable Particles**. 
-
-![Collideable Particles Folder](../Screenshots/collideable-particles-folder.png)
-<br>*Particles generated when the client joins the game*
-
-I want to keep the name of all particles as generic. Therefore, all of them are named **Part**. These parts despawn overtime based on its **LifeTime** property, which is amount of seconds for these parts to despawn. This property is from **Snow Thread** folder and there are more properties, which will be later explained.
-
-![Collideable Particles Folder 2](../Screenshots/collideable-particles-folder-2.png)
-<br>*Collideable Particle Actors*
-
-![Generate Snow Particles](../Screenshots/generate-snow-particles.png)
-<br>*Generate Collideable Snow Particles LocalScript*
-
-I created another folder inside the ReplicatedStorage called **Collideable Snow Actors**. This folder has a list of actors, or type of particles, that will be rendered and generated inside the game. Recall that the **Snow Actors** for instance is used as a snow generator, which is then cloned into **Snow Thread**. The **Part**, as recalled, is a snow particle, that I modeled and the **Generate Collideable Snow Particles** LocalScript configures properties for generating snow when the player joins the game. 
-
-### Creating Weather Threads
-
 ![Snow Thread Properties](../Screenshots/snow-thread-properties.png)
-<br>*Snow Thread Properties*
 
-The final piece is to clone all weather actors to a thread so that they can apply properties to generate snow. For example, I cloned **Snow Actors** inside **Snow Thread** folder so that all of them apply those properties from that folder. 
+Basically, snow parts can be customized by configuring properties under Snow Thread.
 
-You can read the developer's **Collideable Particles Module** API documentation for more info about the properties.
 
-## Snow Weather Demo
+```lua
+wait(.1)
+local ReplicatedStorage = game.ReplicatedStorage
+local EmitterCreator = require(ReplicatedStorage.Modules:FindFirstChild('ParticlesModuleExperimental'))
+local Emitter = EmitterCreator.new()
+local Actor = script.Parent
+local Thread = Actor.Parent
+local WeatherGenerator = workspace:WaitForChild('Weather Generator')
+local Weathers = WeatherGenerator:WaitForChild('Weathers')
+
+--Emitted particle
+Emitter.Part = script.Part
+--Part that emmits the particles
+Emitter.EmmiterObject = Weathers:FindFirstChild(Actor:GetAttribute('EmmiterObject')) 
+--Location of where all particles will be stored at
+Emitter.Folder = workspace:WaitForChild('Collideable Particles')
+
+--Sets properties for Emitter
+Emitter.Bounce = Thread:GetAttribute("Bounce")
+Emitter.ColliderSize = Thread:GetAttribute("ColliderSize")
+Emitter.CollisionComplexity = Thread:GetAttribute("CollisionComplexity")
+Emitter.Drag = Thread:GetAttribute("Drag")
+Emitter.LifeTime = Thread:GetAttribute("LifeTime")
+Emitter.Rate = Thread:GetAttribute("Rate")
+Emitter.Speed = Thread:GetAttribute("Speed")
+Emitter.Friction = Thread:GetAttribute("Friction")
+Emitter.FaceCamera = Thread:GetAttribute("FaceCamera")
+Emitter.Wind = Thread:GetAttribute("Wind")
+Emitter.WindStrenght = Thread:GetAttribute("WindStrength")
+Emitter.SelfCollisions = Thread:GetChildren("SelfCollisions")
+Emitter.SelfSize = Thread:GetAttribute("SelfSize")
+Emitter.Iterations = Thread:GetAttribute("Iterations")
+Emitter.FluidForce = Thread:GetAttribute("FluidForce")
+--Emitter.Mass = Thread:GetAttribute("Mass")
+Emitter.Acceleration = Thread:GetAttribute("Acceleration")
+Emitter.SelfCollType = EmitterCreator.SelfCollType.Fluid
+
+--Enables the emitter
+Emitter.Enabled = true
+```
+
+This script passes all configurations for each snow emitters. Generation starts afterwards.
+
+```text
+🗺️ Explorer
+└── 🌎 Workspace
+    └── ⚪️ Collideable Particles
+        ├── 🌨️ Part
+        ├── 🌨️ Part
+        ├── 🌨️ Part
+        └── ...and so on
+```
+
+When server starts, snow parts, or **Part**, are generated to snow in the game. Keep in mind that `Emitter.LifeTime` is the time before snow parts disappear from the game. Otherwise, the game might lag or raise other issues.
+
+### Explorer When Server Starts
+
+```text
+🗺️ Explorer
+├── 🌎 Workspace
+│   ├── ⚙️ Weather Generator
+│   │   ├── 📝 Assign Weather IDs
+│   │   └── 🌧️ Weathers
+│   │       ├── ☁️ Weather 1
+│   │       ├── ☁️ Weather 2
+│   │       └── ☁️ Weather 3
+│   └── ⚪️ Collideable Particles  
+│       ├── 🌨️ Part
+│       ├── 🌨️ Part
+│       ├── 🌨️ Part
+│       └── ...and so on
+├── 📦 ReplicatedStorage
+│   └── 📁 Collideable Particle Actors
+│       └── ⚪️ Snow Actor
+│           └── 📝 Generate Collideable Weather Particles
+└── 👤 StarterPlayer
+    └── 📄 StarterPlayerScripts
+        └── 🧵 Weather Thread
+            ├── ⚪️ Snow Actor
+            │   └── 📝 Generate Collideable Weather Particles
+            ├── ⚪️ Snow Actor
+            │   └── 📝 Generate Collideable Weather Particles
+            ├── ⚪️ Snow Actor
+            │   └── 📝 Generate Collideable Weather Particles
+            └── 📝 Clone Weather Actors
+```
+
+### Demo
 
 [![Watch the video](https://img.youtube.com/vi/1YowiFbioWg/hqdefault.jpg)](https://www.youtube.com/embed/1YowiFbioWg)
 
 ## Sources
 
-Collideable Particles Module - https://devforum.roblox.com/t/collideable-particles-module-self-collisions-update-v32/2279402/1
+**Collideable Particles Module** - https://devforum.roblox.com/t/collideable-particles-module-self-collisions-update-v32/2279402/1
