@@ -62,6 +62,40 @@ Basically, whenever the player presses the button to change ability, it goes to 
 ## Ninja Super Powers
 
 ```lua
+local BodyParts = {
+	
+	--R6 and R15 body parts
+	['Head'] = {['Fire Size'] = 0},
+	['HumanoidRootPart'] = {['Fire Size'] = 3},
+	
+	--R15 models body parts
+	['UpperTorso'] = {['Fire Size'] = 4},
+	['LowerTorso'] = {['Fire Size'] = 3},
+	['LeftUpperArm'] = {['Fire Size'] = 3.5},
+	['LeftLowerArm'] = {['Fire Size'] = 3},
+	['LeftHand'] = {['Fire Size'] = 3},
+	['RightUpperArm'] = {['Fire Size'] = 3.5},
+	['RightLowerArm'] = {['Fire Size'] = 3},
+	['RightHand'] = {['Fire Size'] = 3},
+	['LeftUpperLeg'] = {['Fire Size'] = 3},
+	['LeftLowerLeg'] = {['Fire Size'] = 3},
+	['LeftFoot'] = {['Fire Size'] = 3},
+	['RightUpperLeg'] = {['Fire Size'] = 3},
+	['RightLowerLeg'] = {['Fire Size'] = 3},
+	['RightFoot'] = {['Fire Size'] = 3},
+	
+	--R6 models body parts
+	['Torso'] = {['Fire Size'] = 5},
+	['Left Arm'] = {['Fire Size'] = 3},
+	['Right Arm'] = {['Fire Size'] = 3},
+	['Left Leg'] = {['Fire Size'] = 3},
+	['Right Leg'] = {['Fire Size'] = 3}
+}
+```
+
+`Fire Size` can be configured here for all R6 and R15 body parts. Be sure to view all character's body parts to make sure that you're not missing any parts to add fire effects. If you don't want to add fire on some body parts, set `['Fire Size'] = 0`.
+
+```lua
 --[[Adds fire to the player's character
 
 	Parameter(s):
@@ -89,5 +123,4 @@ ReplicatedStorage:FindFirstChild('Add Ninja Super Power Effects').OnServerEvent:
 end)
 ```
 
-This script basically adds `Fire` effect to every character's body parts. `Fire Size` can be configured through its script. When Ninja Super Power are disabled `Remove Ninja Super Power Effects` RemoteEvent is fired *(See its snippet for functionality)*.
-
+This event basically adds `Fire` effect to every character's body parts. When Ninja Super Powers are disabled, `Remove Ninja Super Power Effects` RemoteEvent removes all `Fire` effects.
