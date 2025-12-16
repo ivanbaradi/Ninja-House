@@ -7,7 +7,7 @@
 ```text
 🗺️ Explorer
 ├── 📦 ReplicatedStorage
-│   └── 🥷 Add Ninja Super Power Effects
+│   ├── 🥷 Add Ninja Super Power Effects
 │   └── 🥷 Remove Ninja Super Power Effects
 ├── 📑 ServerScriptService
 │   └── 📝 Ninja Super Power Effects Handler
