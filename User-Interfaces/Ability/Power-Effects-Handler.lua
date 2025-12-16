@@ -6,14 +6,15 @@ local ReplicatedStorage = game.ReplicatedStorage
 	from each of the corresponding body parts.
 	
 	Key:
-	Body Part => Name of the R6 or R15 body part
+		Body Part => Name of the R6 or R15 body part
 	
 	Properties:
-	Fire Size => Size of the fire from 'Ninja Effect'
+		Fire Size => Size of the fire from 'Ninja Effect'
 ]]
 local BodyParts = {
 	
 	--R6 and R15 body parts
+	['Head'] = {['Fire Size'] = 0},
 	['HumanoidRootPart'] = {['Fire Size'] = 3},
 	
 	--R15 models body parts
@@ -45,7 +46,7 @@ local BodyParts = {
 --[[Adds fire to the player's character
 
 	Parameter(s):
-	player (Player) => targeted player to add fire to its character
+		player (Player) => targeted player to add fire to its character
 ]]
 ReplicatedStorage:FindFirstChild('Add Ninja Super Power Effects').OnServerEvent:Connect(function(player: Player)
 	
@@ -53,11 +54,7 @@ ReplicatedStorage:FindFirstChild('Add Ninja Super Power Effects').OnServerEvent:
 	local char = player.Character
 
 	--Only loops through character's body parts
-	for _, bodyPart in pairs(char:GetChildren()) do
-		
-		--Do not add fire to the character's head because the player won't be able to see in 1st person + possible lag
-		if bodyPart.Name == 'Head' then continue end
-		
+	for _, bodyPart in pairs(char:GetChildren()) do	
 		if bodyPart:IsA('MeshPart') --[[R15]] or bodyPart:IsA('Part') --[[R6]] then
 			local Fire = Instance.new('Fire', bodyPart)
 			Fire.Name = 'Ninja Effect'
@@ -84,7 +81,6 @@ ReplicatedStorage:FindFirstChild('Remove Ninja Super Power Effects').OnServerEve
 	
 	--Only loops through character's body parts
 	for _, bodyPart in pairs(char:GetChildren()) do
-		if bodyPart.Name == 'Head' then continue end
 		if bodyPart:IsA('MeshPart') or bodyPart:IsA('Part') then
 			local NinjaEffect = bodyPart:FindFirstChild('Ninja Effect')
 			if NinjaEffect then NinjaEffect:Remove() end
