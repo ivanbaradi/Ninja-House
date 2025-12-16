@@ -108,10 +108,6 @@ ReplicatedStorage:FindFirstChild('Add Ninja Super Power Effects').OnServerEvent:
 
 	--Only loops through character's body parts
 	for _, bodyPart in pairs(char:GetChildren()) do
-		
-		--Do not add fire to the character's head because the player won't be able to see in 1st person + possible lag
-		if bodyPart.Name == 'Head' then continue end
-		
 		if bodyPart:IsA('MeshPart') --[[R15]] or bodyPart:IsA('Part') --[[R6]] then
 			local Fire = Instance.new('Fire', bodyPart)
 			Fire.Name = 'Ninja Effect'
