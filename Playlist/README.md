@@ -2,8 +2,7 @@
 
 Playlist plays background music in a Roblox game.
 
-## 🗺️ Workspace
-
+## 🗺️ Explorer
 ```text
 🗺️ Explorer
 ├── 🌎 Workspace
