@@ -45,6 +45,10 @@ while true do
 end
 ```
 
-This snippet randomly selects a song to play from a configured soundtrack genre, which then updates all clients' song dashboards. Unplayable songs are skipped. 
+This snippet from **Run Playlist** randomly selects a song to play from a configured soundtrack genre, which then updates all clients' song dashboards. Unplayable songs are skipped. 
 
 Keep in mind that this script runs in the server rather than client meaning that every player will hear the same song within the same time position.
+
+## 🤔 How Songs are Stored
+
+All songs are stored as `IntValue` objects, which  store integers as values. In Roblox, each song includes a SoundId. In this case, every `IntValue` holds SoundID for the **Run Playlist** to fetch information about the song including its creator, update UI, and  play it on the background.  
