@@ -66,7 +66,7 @@ TouchEnded event is triggered whenever the player leaves the Door Opener, which 
 
 ## ⚙️ Door Handler
 ```lua
-script['Run Door'].OnInvoke = function(Door: Model, Character: Model, OpenDoor: Tween, CloseDoor: Tween)
+script['Run Door'].OnInvoke = function(Door: Model, OpenDoor: Tween, CloseDoor: Tween)
 		
 	--Door Model
 	local DoorSound = Door['Door Opener']['Door Sound']

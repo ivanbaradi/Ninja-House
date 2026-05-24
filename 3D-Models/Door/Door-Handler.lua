@@ -7,11 +7,10 @@ SetCollidableParts = script['Set Collidable Parts']
 
 	Parameter(s):
 		Door: target door
-		Character: player's character who triggered target door
 		OpenDoor: opening door animation
 		CloseDoor: closing door animation
 ]]
-script['Run Door'].OnInvoke = function(Door: Model, Character: Model, OpenDoor: Tween, CloseDoor: Tween)
+script['Run Door'].OnInvoke = function(Door: Model, OpenDoor: Tween, CloseDoor: Tween)
 		
 	--Door Model
 	local DoorSound = Door['Door Opener']['Door Sound']
