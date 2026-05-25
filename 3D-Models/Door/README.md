@@ -48,7 +48,7 @@ DoorOpener.Touched:Connect(function(part: BasePart)
 		return 
 	end
 
-	RunDoor:Invoke(Door, Character, openDoor, closeDoor)
+	RunDoor:Invoke(Door, openDoor, closeDoor)
 	
 	debounce = false	
 end)
