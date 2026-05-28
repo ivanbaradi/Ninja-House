@@ -6,63 +6,43 @@ Doors in the game are animated. It opens whenever the player approaches it and c
 ```text
 🗺️ Explorer
 ├── 🌎 Workspace
-│   └── 🚪 Door 
-│       ├── 🔓 Door Opener
-│       │   ├── 🔊 Door Sound
-│       │   └── 📝 Handle Door
-│       ├── ⚙️ Configuration
-│       │   ├── ⌗ Close Door Wait Time
-│       │   ├── ⌗ Closing Door Sound ID
-│       │   ├── ⌗ Opening Door Sound ID
-│       │   ├── ⌗ Max Door Angle
-│       │   └── ☑️ Is Inside Door Opener
-│       └── 🧱 ...other door parts including hinge
+│	└── 🚪 Animating Door
+│		├── 🚪 Door 
+│		│   ├── 🧱 Hinge
+│		│   ├── 🧱 ...other door parts
+│		│   └── ⚙️ Configuration
+│		│      	└── ⌗ Max Door Angle
+│		├── 🚪 ...other doors 
+│		├── 🔓 Door Opener
+│		│   ├── 🔊 Door Sound
+│		│   └── 📝 Handle Door
+│		└── ⚙️ Configuration
+│			├── ⌗ Close Door Wait Time
+│			├── ⌗ Closing Door Sound ID
+│			├── ⌗ Opening Door Sound ID
+│			└── ☑️ Is Inside Door Opener
 └── ☁️ ServerScriptServices
-    └── 📝 Door Handler
-        ├── 📝 Door Modules 
-        ├── 🧱 Animate Door
-        ├── 🧱 Run Door
-        ├── ⚡️ Play Door Sound
-        └── ⚡️ Set Collidable Parts
+	└── 📝 Door Handler
+		├── 📝 Door Modules 
+		├── 🧱 Animate Door
+		├── 🧱 Run Door
+		├── ⚡️ Play Door Sound
+		└── ⚡️ Set Collidable Parts
 ```
 
 ## 🚪🚶🏼 Handle Door
 
 ### 📖 Door Dictionary
 ```lua
-DoorDictionaries = {
-	{
-		Door = Door, -- door model and its opening and closing door animations
-		OpenDoor = AnimateDoor:Invoke(Door.Hinge, MaxDoorAngle.Value),
-		CloseDoor = AnimateDoor:Invoke(Door.Hinge, 0)
-	}
+type DoorDictionary = {
+	Door: Model, -- door model
+	OpenDoor: Tween, -- animation for opening door
+	CloseDoor: Tween -- animation for closing door
 }
 ```
 
-`DoorDictionaries` is a list of all door infos that <u>include the door model and its opening and closing door animations</u>. This will enable to animate all doors at once.
+`DoorDictionary` is a dictionary that includes information about the door including its 3D structure, and their opening and closing door animations. 
 
-### ⚖️ Working with Multiple Doors
-```text
-...
-└── 🚪 Doors 
-    ├── 🚪 Left Door
-	│   ├── ⚙️ Configuration
-	│   │	└── ⌗ Max Door Angle
-	│   └── 🧱 ...other door parts including hinge 
-    ├── 🚪 Right Door
-	│   ├── ⚙️ Configuration
-	│   │	└── ⌗ Max Door Angle
-	│   └── 🧱 ...other door parts including hinge 
-    ├── 🔓 Door Opener
-	│   ├── 📝 Handle Door
-	│   └── 🔊 Door Sound
-    └── ⚙️ Configuration 
-		├── ⌗ Close Door Wait Time
-		├── ⌗ Closing Door Sound ID
-		├── ⌗ Opening Door Sound ID
-		└── ☑️ Is Inside Door Opener
-```
-`Doors` includes multiple doors whereas each door has its own configuration for setting maximum door angle. The rest of the configurations apply for all doors. In this example, the character is going through an automatic double door.
 
 ```lua
 DoorDictionaries = {}
@@ -76,7 +56,7 @@ for _, Door in pairs(Doors:GetChildren()) do
 end
 ```
 
-This snippet inserts multiple doors into `DoorDictionaries`. It's a dynamically scaled way of adding animations to all doors.
+Each door gets iterated to initialize their animations as well as their `Max Door Angle`, which is the maximum angle of an opened door, to get inserted into `DoorDictionaries`.
 
 
 ### ⚡️ Touched Event
@@ -108,7 +88,7 @@ DoorOpener.Touched:Connect(function(part: BasePart)
 end)
 ```
 
-Touched event is triggered when a player enters an invisible part called the `DoorOpener`, which is responsible for animating the door.  `RunDoor` relays data to another script called **Door Handler**.
+TouchedEvent is triggered when a player enters an invisible part called the `DoorOpener`, which is responsible for animating the door.  `RunDoor` relays data to another script called **Door Handler** for executing the rest of functionalities.
 
 ```lua
 DoorOpener.TouchEnded:Connect(function() 

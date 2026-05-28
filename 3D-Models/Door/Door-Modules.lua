@@ -27,7 +27,7 @@ end
 ]]
 DoorHandler['Set Collidable Parts'].Event:Connect(function(Door: Model, canCollide: boolean)
 	for _, obj in pairs(Door:GetChildren()) do
-		if (obj:IsA('Part') or obj:IsA('UnionOperation')) and obj.Name ~= 'Door Opener' then obj.CanCollide = canCollide end
+		if (obj:IsA('Part') or obj:IsA('UnionOperation')) then obj.CanCollide = canCollide end
 	end
 end)
 
