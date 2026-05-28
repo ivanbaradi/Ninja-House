@@ -8,6 +8,7 @@ Doors in the game are animated. It opens whenever the player approaches it and c
 ├── 🌎 Workspace
 │   └── 🚪 Door 
 │       ├── 🔓 Door Opener
+│       │   ├── 🔊 Door Sound
 │       │   └── 📝 Handle Door
 │       ├── ⚙️ Configuration
 │       │   ├── ⌗ Close Door Wait Time
@@ -26,6 +27,59 @@ Doors in the game are animated. It opens whenever the player approaches it and c
 ```
 
 ## 🚪🚶🏼 Handle Door
+
+### 📖 Door Dictionary
+```lua
+DoorDictionaries = {
+	{
+		Door = Door, -- door model and its opening and closing door animations
+		OpenDoor = AnimateDoor:Invoke(Door.Hinge, MaxDoorAngle.Value),
+		CloseDoor = AnimateDoor:Invoke(Door.Hinge, 0)
+	}
+}
+```
+
+`DoorDictionaries` is a list of all door infos that <u>include the door model and its opening and closing door animations</u>. This will enable to animate all doors at once.
+
+### ⚖️ Working with Multiple Doors
+```text
+...
+└── 🚪 Doors 
+    ├── 🚪 Left Door
+	│   ├── ⚙️ Configuration
+	│   │	└── ⌗ Max Door Angle
+	│   └── 🧱 ...other door parts including hinge 
+    ├── 🚪 Right Door
+	│   ├── ⚙️ Configuration
+	│   │	└── ⌗ Max Door Angle
+	│   └── 🧱 ...other door parts including hinge 
+    ├── 🔓 Door Opener
+	│   ├── 📝 Handle Door
+	│   └── 🔊 Door Sound
+    └── ⚙️ Configuration 
+		├── ⌗ Close Door Wait Time
+		├── ⌗ Closing Door Sound ID
+		├── ⌗ Opening Door Sound ID
+		└── ☑️ Is Inside Door Opener
+```
+`Doors` includes multiple doors whereas each door has its own configuration for setting maximum door angle. The rest of the configurations apply for all doors. In this example, the character is going through an automatic double door.
+
+```lua
+DoorDictionaries = {}
+for _, Door in pairs(Doors:GetChildren()) do
+	if not Door:IsA('Model') then continue end
+	table.insert(DoorDictionaries, {
+		Door = Door, 
+		OpenDoor = AnimateDoor:Invoke(Door.Hinge, Door.Configuration['Max Door Angle'].Value),
+		CloseDoor = AnimateDoor:Invoke(Door.Hinge, 0)
+	})
+end
+```
+
+This snippet inserts multiple doors into `DoorDictionaries`. It's a dynamically scaled way of adding animations to all doors.
+
+
+### ⚡️ Touched Event
 ```lua
 DoorOpener.Touched:Connect(function(part: BasePart) 
 	
@@ -36,19 +90,19 @@ DoorOpener.Touched:Connect(function(part: BasePart)
 	local Character = part:FindFirstAncestorOfClass('Model')
 	local Player = Players:GetPlayerFromCharacter(Character)
 	
-	--Must check if other players have permission to use doors
-	if not GameOwnerCommunications['Players Can Use Doors']:Invoke(Player) then 
-		debounce = false
-		return 
-	end
-	
 	--Must check if the model is a character
 	if not Character:FindFirstChild('Humanoid') then
 		debounce = false
 		return 
 	end
+	
+	--Must check if other players have permission to use doors
+	if not GameOwnerCommunications['Players Can Use Doors']:Invoke(Player) then 
+		debounce = false
+		return 
+	end
 
-	RunDoor:Invoke(Door, openDoor, closeDoor)
+	RunDoor:Invoke(DoorDictionaries, Configuration, DoorOpener['Door Sound'])
 	
 	debounce = false	
 end)
@@ -66,31 +120,30 @@ TouchEnded event is triggered whenever the player leaves the Door Opener, which 
 
 ## ⚙️ Door Handler
 ```lua
-script['Run Door'].OnInvoke = function(Door: Model, OpenDoor: Tween, CloseDoor: Tween)
-		
-	--Door Model
-	local DoorSound = Door['Door Opener']['Door Sound']
+script['Run Door'].OnInvoke = function(DoorDictionaries: {DoorDictionary}, Configuration: Configuration, DoorSound: Sound)
 			
-	--Configuration
-	local Configuration = Door.Configuration
-	local InsideDoorOpener = Configuration['Is Inside Door Opener'] -- detects player's existence inside this part
-	local WaitTime = Configuration['Close Door Wait Time'] -- waiting time to close the door
-	local OpeningSoundID = Configuration['Opening Sound ID'] -- sound for opening the door
-	local ClosingSoundID = Configuration['Closing Sound ID'] -- sound for closing the door
+	local InsideDoorOpener = Configuration['Is Inside Door Opener']
+	local WaitTime = Configuration['Close Door Wait Time']
+	local OpeningSoundID = Configuration['Opening Sound ID']
+	local ClosingSoundID = Configuration['Closing Sound ID']
 	
-	--Opens door
+	local function runDoorAnimations(SoundID: IntValue, canCollide: boolean)
+		PlayDoorSound:Fire(DoorSound, SoundID.Value)
+		for _, DoorDictionary in ipairs(DoorDictionaries) do
+			SetCollidableParts:Fire(DoorDictionary.Door, canCollide)
+			DoorDictionary[(canCollide and 'CloseDoor') or 'OpenDoor']:Play()
+		end
+	end
+	
+	-- Opens door
 	InsideDoorOpener.Value = true
-	SetCollidableParts:Fire(Door, false)
-	PlayDoorSound:Fire(DoorSound, OpeningSoundID.Value)
-	OpenDoor:Play()
+	runDoorAnimations(OpeningSoundID, false)
 	
-	--Loops until player left the "Door Opener" part
+	-- Loops until player left the "Door Opener" part
 	repeat task.wait(WaitTime.Value) until not InsideDoorOpener.Value
 
-	--Closes door
-	PlayDoorSound:Fire(DoorSound, ClosingSoundID.Value)
-	CloseDoor:Play()
-	SetCollidableParts:Fire(Door, true)
+	-- Closes door
+	runDoorAnimations(ClosingSoundID, true)
 end
 ```
 

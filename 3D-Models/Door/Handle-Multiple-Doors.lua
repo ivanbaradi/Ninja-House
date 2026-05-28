@@ -11,27 +11,27 @@ RunDoor = DoorHandler['Run Door']
 --Game Owner's Communications
 GameOwnerCommunications = ReplicatedStorage['Game Owner Settings'].Communications
 
---Door Model
+--Multi-Door Model
 DoorOpener = script.Parent -- part for players to touch for opening the door
-Door = DoorOpener.Parent
-Hinge = Door.PrimaryPart
+Doors = DoorOpener.Parent
 
 --Prevents unneccessary functional executions
 debounce = false
 
 --Configuration
-Configuration = Door.Configuration
+Configuration = Doors.Configuration
 InsideDoorOpener = Configuration['Is Inside Door Opener']
-MaxDoorAngle = Configuration['Max Door Angle']
 
---List of doors and their animations
-DoorDictionaries = {
-	{
-		Door = Door,
-		OpenDoor = AnimateDoor:Invoke(Door.Hinge, MaxDoorAngle.Value),
+--Inserts all door models into array to set all their animations
+DoorDictionaries = {}
+for _, Door in pairs(Doors:GetChildren()) do
+	if not Door:IsA('Model') then continue end
+	table.insert(DoorDictionaries, {
+		Door = Door, 
+		OpenDoor = AnimateDoor:Invoke(Door.Hinge, Door.Configuration['Max Door Angle'].Value),
 		CloseDoor = AnimateDoor:Invoke(Door.Hinge, 0)
-	}
-}
+	})
+end
 
 --Triggers when a player approaches the door
 DoorOpener.Touched:Connect(function(part: BasePart) 
@@ -43,19 +43,18 @@ DoorOpener.Touched:Connect(function(part: BasePart)
 	local Character = part:FindFirstAncestorOfClass('Model')
 	local Player = Players:GetPlayerFromCharacter(Character)
 	
-	--Must check if other players have permission to use doors
-	if not GameOwnerCommunications['Players Can Use Doors']:Invoke(Player) then 
-		debounce = false
-		return 
-	end
-	
 	--Must check if the model is a character
 	if not Character:FindFirstChild('Humanoid') then
 		debounce = false
 		return 
 	end
 	
-	--Invokes 'Door Handler' to perform door animation(s)
+	--Must check if other players have permission to use doors
+	if not GameOwnerCommunications['Players Can Use Doors']:Invoke(Player) then 
+		debounce = false
+		return 
+	end
+
 	RunDoor:Invoke(DoorDictionaries, Configuration, DoorOpener['Door Sound'])
 	
 	debounce = false	
