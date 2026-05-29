@@ -14,6 +14,8 @@ Playlist plays background music in a Roblox game.
 │       ├── 📝 Run Playlist
 │       │   └── 📝 Playlist Modules
 │       │       ├── 🧱 Can Play Song
+│       │       ├── 🧱 Count Visited Songs
+│       │       ├── 🧱 Song Visited
 │       │       ├── 🧱 Play Song
 │       │       └── ⚡️ Initialize Song UI
 │       └── ⚙️ Configuration
@@ -34,18 +36,18 @@ Playlist plays background music in a Roblox game.
 while true do
 	Song = Soundtracks[math.random(#Soundtracks)]
 	Playlist.SoundId = "rbxassetid://"..Song.Value
-		
-	if canPlaySong:Invoke() then
+	if canPlaySong:Invoke() and not alreadyVisited:Invoke(Song.Value, visitedSongs) then
 		SongCreator = MarketplaceService:GetProductInfoAsync(Song.Value).Creator.Name
 		timePosition = 0
 		timeLength = math.ceil(Playlist.TimeLength)
 		initializeSongUI:Fire(Song, timeLength, SongCreator)
 		playSong:Invoke(timePosition, timeLength)
+		if countVisited:Invoke(visitedSongs) == #Soundtracks then table.clear(visitedSongs) end
 	end
 end
 ```
 
-This snippet from **Run Playlist** randomly selects a song to play from a configured soundtrack genre, which then updates all clients' song dashboards. Unplayable songs are skipped. 
+This snippet randomly selects a song to play from a configured soundtrack genre, which then updates all clients' song dashboards. Unplayable and visited songs are skipped. 
 
 Keep in mind that this script runs in the server rather than client meaning that every player will hear the same song within the same time position.
 

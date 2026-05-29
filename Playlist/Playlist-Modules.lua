@@ -60,14 +60,12 @@ end
 
 --[[Initializes some parts of Song UI before the song starts playing
 
-	TODO: Fix where UI gets updated when server starts
-
 	Parameter(s):
 		Song: song object including its name and assetID
 		timeLength: time length of the song
 		songCreator: song creator's name
 ]]
-script:FindFirstChild('Initialize Song UI').Event:Connect(function(Song: IntValue, timeLength: number, songCreator: string)
+script:FindFirstChild('Initialize Song UI').Event:Connect(function(Song: IntValue , timeLength: number, songCreator: string)
 	--print("Initializing UI for '"..song.Name)
 	UpdateName:FireAllClients(Song.Name)
 	UpdateCreator:FireAllClients(songCreator)
@@ -75,3 +73,45 @@ script:FindFirstChild('Initialize Song UI').Event:Connect(function(Song: IntValu
 	UpdateTimePosition:FireAllClients('0:00')
 	UpdateProgressBar:FireAllClients(0, timeLength)
 end)
+
+
+--[[Checks whether a song is already played
+
+	Parameter(s):
+		soundId: target song's soundId
+		visitedSongs: list of visited songs including their soundIds and names
+		
+	Return(s):
+		boolean: song is already played. False, otherwise
+]]
+script:FindFirstChild('Song Visited').OnInvoke = function(soundId: number | string, visitedSongs: {[number | string] : string}) : boolean
+	
+	for visitedSoundId in pairs(visitedSongs) do
+		if soundId == visitedSoundId then 
+			return true
+		end
+	end
+	
+	return false
+end
+
+
+--[[Counts all visited songs from a table of visited songs
+
+	Parameter(s):
+		visitedSongs: list of visited songs including their soundIds and names
+		
+	Return(s):
+		number: total of visited songs
+
+]]
+script:FindFirstChild('Count Visited Songs').OnInvoke = function(visitedSongs: {[number | string] : string}) : number
+
+	local result = 0
+
+	for visitedSoundId in pairs(visitedSongs) do
+		result += 1
+	end
+
+	return result
+end

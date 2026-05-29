@@ -13,12 +13,17 @@ Modules = script:FindFirstChild('Playlist Modules')
 initializeSongUI = Modules:FindFirstChild('Initialize Song UI')
 playSong = Modules:FindFirstChild('Play Song')
 canPlaySong = Modules:FindFirstChild('Can Play Song')
+alreadyVisited = Modules:FindFirstChild('Song Visited')
+countVisited = Modules:FindFirstChild('Count Visited Songs')
 
 --Current Song Info
 Song = nil
 SongCreator = nil
 timePosition = nil
 timeLength = nil
+
+--List of visited songs' soundIDs
+visitedSongs = {}
 
 --Will need to update some parts of Song UI when client joins the game
 ReplicatedStorage:FindFirstChild('Initialize UI on Join').OnServerEvent:Connect(function(player: Player)
@@ -33,21 +38,24 @@ while true do
 	--Randomly selects a song (soundtrack)
 	Song = Soundtracks[math.random(#Soundtracks)]
 	Playlist.SoundId = "rbxassetid://"..Song.Value
-	print("Loading '"..Song.Name.."'")
+	--print("Loading '"..Song.Name.."'")
 		
-	if canPlaySong:Invoke() then
+	if canPlaySong:Invoke() and not alreadyVisited:Invoke(Song.Value, visitedSongs) then
 		
-		--Gets the name of the artist of the current song or the creator of it
+		visitedSongs[Song.Value] = Song.Name
+		--print(visitedSongs)
+		
+		-- Gets the name of the artist of the current song or the creator of it
 		--local Artist = song:GetAttribute('Artist')
 
-		--Sets the artist's name on Song Dashboard UI (if no artist is mentioned, use the creator's instead)	
+		-- Sets the artist's name on Song Dashboard UI (if no artist is mentioned, use the creator's instead)	
 		--if Artist then
 		--	SongCreator = Artist
 		--else
-		SongCreator = MarketplaceService:GetProductInfo(Song.Value).Creator.Name
+		SongCreator = MarketplaceService:GetProductInfoAsync(Song.Value).Creator.Name
 		--end
 		
-		--Sets new time position and length of the song
+		-- Sets new time position and length of the song
 		--while Playlist.TimeLength == 0 do wait(.1) end
 		timePosition = 0
 		timeLength = math.ceil(Playlist.TimeLength)
@@ -55,7 +63,11 @@ while true do
 		
 		initializeSongUI:Fire(Song, timeLength, SongCreator)
 		playSong:Invoke(timePosition, timeLength)
-	else
-		print("'"..Song.Name.."' cannot be played.")
+		
+		-- Clears all visited songs once all are played
+		if countVisited:Invoke(visitedSongs) == #Soundtracks then 
+			table.clear(visitedSongs) 
+			--print('All songs are cleared')
+		end
 	end
 end
