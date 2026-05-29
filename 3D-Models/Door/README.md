@@ -70,19 +70,9 @@ DoorOpener.Touched:Connect(function(part: BasePart)
 	local Character = part:FindFirstAncestorOfClass('Model')
 	local Player = Players:GetPlayerFromCharacter(Character)
 	
-	--Must check if the model is a character
-	if not Character:FindFirstChild('Humanoid') then
-		debounce = false
-		return 
+	if Player and GameOwnerCommunications['Players Can Use Doors']:Invoke(Player) then
+		RunDoor:Invoke(DoorDictionaries, Configuration, DoorOpener['Door Sound'])
 	end
-	
-	--Must check if other players have permission to use doors
-	if not GameOwnerCommunications['Players Can Use Doors']:Invoke(Player) then 
-		debounce = false
-		return 
-	end
-
-	RunDoor:Invoke(DoorDictionaries, Configuration, DoorOpener['Door Sound'])
 	
 	debounce = false	
 end)

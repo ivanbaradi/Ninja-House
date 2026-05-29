@@ -43,19 +43,10 @@ DoorOpener.Touched:Connect(function(part: BasePart)
 	local Character = part:FindFirstAncestorOfClass('Model')
 	local Player = Players:GetPlayerFromCharacter(Character)
 	
-	-- Must check if this character is owned by an actual player
-	if not Player then
-		debounce = false
-		return 
+	-- Tells 'Door Handler' script to run all door animations
+	if Player and GameOwnerCommunications['Players Can Use Doors']:Invoke(Player) then
+		RunDoor:Invoke(DoorDictionaries, Configuration, DoorOpener['Door Sound'])
 	end
-	
-	-- Must check if other players have permission to use doors
-	if not GameOwnerCommunications['Players Can Use Doors']:Invoke(Player) then 
-		debounce = false
-		return 
-	end
-
-	RunDoor:Invoke(DoorDictionaries, Configuration, DoorOpener['Door Sound'])
 	
 	debounce = false	
 end)
