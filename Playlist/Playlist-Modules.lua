@@ -63,12 +63,12 @@ end
 	Parameter(s):
 		Song: song object including its name and assetID
 		timeLength: time length of the song
-		songCreator: song creator's name
+		songCreatorName: song creator's name
 ]]
-script:FindFirstChild('Initialize Song UI').Event:Connect(function(Song: IntValue , timeLength: number, songCreator: string)
+script:FindFirstChild('Initialize Song UI').Event:Connect(function(Song: IntValue , timeLength: number, songCreatorName: string)
 	--print("Initializing UI for '"..song.Name)
 	UpdateName:FireAllClients(Song.Name)
-	UpdateCreator:FireAllClients(songCreator)
+	UpdateCreator:FireAllClients(songCreatorName)
 	UpdateTimeLength:FireAllClients(FormatNumberToTime:Invoke(timeLength))
 	UpdateTimePosition:FireAllClients('0:00')
 	UpdateProgressBar:FireAllClients(0, timeLength)
@@ -87,7 +87,7 @@ end)
 script:FindFirstChild('Song Visited').OnInvoke = function(soundId: number | string, visitedSongs: {[number | string] : string}) : boolean
 	
 	for visitedSoundId in pairs(visitedSongs) do
-		if soundId == visitedSoundId then 
+		if tonumber(soundId) == tonumber(visitedSoundId) then 
 			return true
 		end
 	end
