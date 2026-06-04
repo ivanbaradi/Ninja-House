@@ -14,9 +14,11 @@ DoorHandler = script.Parent
 		Tween: tween for animating a door
 ]]
 DoorHandler['Animate Door'].OnInvoke = function(Hinge: Part, ry: number) : Tween
-	return TweenService:Create(Hinge, TweenInfo.new(), {
-		CFrame = Hinge.CFrame * CFrame.Angles(0, math.rad(ry), 0) -- Change 100 to whatever value. Range of swing.
-	})
+	return TweenService:Create(
+		Hinge, 
+		TweenInfo.new(.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
+		{CFrame = Hinge.CFrame * CFrame.Angles(0, math.rad(ry), 0)}
+	)
 end
 
 --[[Configures all collidable parts of a door. 
