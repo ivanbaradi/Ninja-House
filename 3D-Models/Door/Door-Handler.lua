@@ -1,7 +1,8 @@
 --Door Modules
-AnimateDoor = script['Animate Door']
-PlayDoorSound = script['Play Door Sound']
-SetCollidableParts = script['Set Collidable Parts']
+DoorModules = script['Door Modules']
+AnimateDoor = DoorModules['Animate Door']
+PlayDoorSound = DoorModules['Play Door Sound']
+SetCollidableParts = DoorModules['Set Collidable Parts']
 
 --Door Dictionary type
 type DoorDictionary = {

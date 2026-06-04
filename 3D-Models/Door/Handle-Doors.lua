@@ -3,15 +3,17 @@ ReplicatedStorage = game.ReplicatedStorage
 ServerScriptService = game.ServerScriptService
 Players = game:GetService('Players')
 
--- Door Handler Modules
+-- Door Handler
 DoorHandler = ServerScriptService['Door Handler']
-AnimateDoor = DoorHandler['Animate Door']
-RunDoor = DoorHandler['Run Door']
+
+-- Door Handler Modules
+DoorModules = DoorHandler['Door Modules']
+AnimateDoor = DoorModules['Animate Door']
 
 -- Game Owner's Communications
 GameOwnerCommunications = ReplicatedStorage['Game Owner Settings'].Communications
 
--- Animating Door Model
+-- Animating Doors Model
 DoorOpener = script.Parent -- part for players to touch for opening the door
 Doors = DoorOpener.Parent
 
@@ -33,7 +35,7 @@ for _, Door in pairs(Doors:GetChildren()) do
 	})
 end
 
---Triggers when a player approaches the door
+-- Triggers when a player approaches the door
 DoorOpener.Touched:Connect(function(part: BasePart) 
 	
 	if debounce then return end
@@ -43,9 +45,9 @@ DoorOpener.Touched:Connect(function(part: BasePart)
 	local Character = part:FindFirstAncestorOfClass('Model')
 	local Player = Players:GetPlayerFromCharacter(Character)
 	
-	-- Tells 'Door Handler' script to run all door animations
+	--Tells 'Door Handler' script to run all door animations
 	if Player and GameOwnerCommunications['Players Can Use Doors']:Invoke(Player) then
-		RunDoor:Invoke(DoorDictionaries, Configuration, DoorOpener['Door Sound'])
+		DoorHandler['Run Door']:Invoke(DoorDictionaries, Configuration, DoorOpener['Door Sound'])
 	end
 	
 	debounce = false	

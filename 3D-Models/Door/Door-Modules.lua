@@ -1,9 +1,6 @@
 --Roblox Services
 TweenService = game:GetService("TweenService")
 
---Door Handler
-DoorHandler = script.Parent
-
 --[[Animates opening or closing door
 
 	Parameter(s):
@@ -13,7 +10,7 @@ DoorHandler = script.Parent
 	Return(s):
 		Tween: tween for animating a door
 ]]
-DoorHandler['Animate Door'].OnInvoke = function(Hinge: Part, ry: number) : Tween
+script['Animate Door'].OnInvoke = function(Hinge: Part, ry: number) : Tween
 	return TweenService:Create(
 		Hinge, 
 		TweenInfo.new(.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
@@ -27,7 +24,7 @@ end
 		Door => target door
 		canCollide => boolen flag for collidable parts
 ]]
-DoorHandler['Set Collidable Parts'].Event:Connect(function(Door: Model, canCollide: boolean)
+script['Set Collidable Parts'].Event:Connect(function(Door: Model, canCollide: boolean)
 	for _, obj in pairs(Door:GetChildren()) do
 		if (obj:IsA('Part') or obj:IsA('UnionOperation')) then obj.CanCollide = canCollide end
 	end
@@ -40,7 +37,7 @@ end)
 		DoorSound => target door's sound
 		doorSoundID => sound ID for creating a door sound
 ]]
-DoorHandler['Play Door Sound'].Event:Connect(function(DoorSound: Sound, doorSoundID: number)
+script['Play Door Sound'].Event:Connect(function(DoorSound: Sound, doorSoundID: number)
 	DoorSound.SoundId = 'rbxassetid://'..doorSoundID
 	DoorSound:Play()
 end)

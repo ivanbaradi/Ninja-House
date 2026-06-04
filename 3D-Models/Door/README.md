@@ -24,10 +24,11 @@ Doors in the game are animated. It opens whenever the player approaches it and c
 └── ☁️ ServerScriptServices
 	└── 📝 Door Handler
 		├── 📝 Door Modules 
-		├── 🧱 Animate Door
-		├── 🧱 Run Door
-		├── ⚡️ Play Door Sound
-		└── ⚡️ Set Collidable Parts
+		│	├── 🧱 Animate Door
+		│	├── ⚡️ Play Door Sound
+		│	└── ⚡️ Set Collidable Parts
+		└── 🧱 Run Door
+
 ```
 
 ## 🚪🚶🏼 Handle Door
@@ -71,7 +72,7 @@ DoorOpener.Touched:Connect(function(part: BasePart)
 	local Player = Players:GetPlayerFromCharacter(Character)
 	
 	if Player and GameOwnerCommunications['Players Can Use Doors']:Invoke(Player) then
-		RunDoor:Invoke(DoorDictionaries, Configuration, DoorOpener['Door Sound'])
+		DoorHandler['Run Door']:Invoke(DoorDictionaries, Configuration, DoorOpener['Door Sound'])
 	end
 	
 	debounce = false	
