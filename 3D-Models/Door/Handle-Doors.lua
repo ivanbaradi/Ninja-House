@@ -46,9 +46,7 @@ end
 while task.wait() do
 
 	--[[Handles door configurations
-	
-		TODO: Fix door type hints
-	
+		
 		Parameter(s):
 			newState: new state for CurrentState
 			doorOptions: door options to configure
