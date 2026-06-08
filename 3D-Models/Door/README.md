@@ -2,7 +2,7 @@
 
 Doors in the game are animated. It opens whenever the player approaches it and closes when it goes away from it. By default, people are allowed to use the doors unless the game owner restricts that access. 
 
-## 🗺️ Explorer
+# 🗺️ Explorer
 ```text
 🗺️ Explorer
 ├── 🌎 Workspace
@@ -17,23 +17,22 @@ Doors in the game are animated. It opens whenever the player approaches it and c
 │		│   ├── 🔊 Door Sound
 │		│   └── 📝 Handle Door
 │		└── ⚙️ Configuration
-│			├── ⌗ Close Door Wait Time
 │			├── ⌗ Closing Door Sound ID
 │			├── ⌗ Opening Door Sound ID
-│			└── ☑️ Is Inside Door Opener
+│			└── ⌗ Current State
 └── ☁️ ServerScriptServices
 	└── 📝 Door Handler
 		├── 📝 Door Modules 
 		│	├── 🧱 Animate Door
 		│	├── ⚡️ Play Door Sound
 		│	└── ⚡️ Set Collidable Parts
-		└── 🧱 Run Door
-
+		├── 🧩 Door Type Hints
+		└── ⚡️ Run Door
 ```
 
-## 🚪🚶🏼 Handle Door
+# 🚪🚶🏼 Handle Door
 
-### 📖 Door Dictionary
+## 📖 Door Dictionary
 ```lua
 type DoorDictionary = {
 	Door: Model, -- door model
@@ -42,11 +41,11 @@ type DoorDictionary = {
 }
 ```
 
-`DoorDictionary` is a dictionary that includes information about the door including its 3D structure, and their opening and closing door animations. 
+`DoorDictionary` includes information about the door including its 3D structure, and their opening and closing door animations. 
 
 
 ```lua
-DoorDictionaries = {}
+local DoorDictionaries = {}
 for _, Door in pairs(Doors:GetChildren()) do
 	if not Door:IsA('Model') then continue end
 	table.insert(DoorDictionaries, {
@@ -59,66 +58,51 @@ end
 
 Each door gets iterated to initialize their animations as well as their `Max Door Angle`, which is the maximum angle of an opened door, to get inserted into `DoorDictionaries`.
 
-
-### ⚡️ Touched Event
+## ⚙️ Door Options
 ```lua
-DoorOpener.Touched:Connect(function(part: BasePart) 
-	
-	if debounce then return end
-
-	debounce = true
-	
-	local Character = part:FindFirstAncestorOfClass('Model')
-	local Player = Players:GetPlayerFromCharacter(Character)
-	
-	if Player and GameOwnerCommunications['Players Can Use Doors']:Invoke(Player) then
-		DoorHandler['Run Door']:Invoke(DoorDictionaries, Configuration, DoorOpener['Door Sound'])
-	end
-	
-	debounce = false	
-end)
+type DoorOptions = {
+	DoorSound: Sound, -- door sound object
+	doorSoundId: number, -- asset Id for door sound
+	canCollide: boolean -- parts are collidable. false, otherwise.
+}
 ```
 
-TouchedEvent is triggered when a player enters an invisible part called the `DoorOpener`, which is responsible for animating the door.  `RunDoor` relays data to another script called **Door Handler** for executing the rest of functionalities.
+`DoorOptions` are configured to play sounds from other doors and to make their parts collidable. If `canCollide == false`, this means that the door is going to open.
+
+
+## 🧱 Door Opener
 
 ```lua
-DoorOpener.TouchEnded:Connect(function() 
-	InsideDoorOpener.Value = false
-end)
-```
-
-TouchEnded event is triggered whenever the player leaves the Door Opener, which closes the door by setting `InsideDoorOpener.Value = false`. Otherwise, the door stays open.
-
-## ⚙️ Door Handler
-```lua
-script['Run Door'].OnInvoke = function(DoorDictionaries: {DoorDictionary}, Configuration: Configuration, DoorSound: Sound)
-			
-	local InsideDoorOpener = Configuration['Is Inside Door Opener']
-	local WaitTime = Configuration['Close Door Wait Time']
-	local OpeningSoundID = Configuration['Opening Sound ID']
-	local ClosingSoundID = Configuration['Closing Sound ID']
-	
-	local function runDoorAnimations(SoundID: IntValue, canCollide: boolean)
-		PlayDoorSound:Fire(DoorSound, SoundID.Value)
-		for _, DoorDictionary in ipairs(DoorDictionaries) do
-			SetCollidableParts:Fire(DoorDictionary.Door, canCollide)
-			DoorDictionary[(canCollide and 'CloseDoor') or 'OpenDoor']:Play()
-		end
-	end
-	
-	-- Opens door
-	InsideDoorOpener.Value = true
-	runDoorAnimations(OpeningSoundID, false)
-	
-	-- Loops until player left the "Door Opener" part
-	repeat task.wait(WaitTime.Value) until not InsideDoorOpener.Value
-
-	-- Closes door
-	runDoorAnimations(ClosingSoundID, true)
+local function handle(newState: string, doorOptions: DoorTypeHints.DoorOptions)
+	if newState == CurrentState.Value then return end
+	DoorHandler['Run Door']:Fire(DoorDictionaries, doorOptions)
+	CurrentState.Value = newState
 end
+
+local AnyPlayerIsInDoorOpener = AnyPlayerIsInPart:Invoke(DoorOpener, PlayerCanUseDoors)
+
+handle((AnyPlayerIsInDoorOpener and 'Opened') or 'Closed', {
+	DoorSound = DoorSound,
+	doorSoundId = (AnyPlayerIsInDoorOpener and OpeningSoundId.Value) or ClosingSoundId.Value,
+	canCollide = not AnyPlayerIsInDoorOpener -- this means false, which is meant to make door parts not collidable when opening it
+})
 ```
 
-This is the main driver of the door animations. This is served as a centralized handler for all doors in the game. You can view separate functionalities from **Door Modules** script to see behind the scenes in depth.
+This part of the code runs indefinitely to perform door animations anytime. `DoorOpener` is served as a zone to check whether the players are inside it by invoking `AnyPlayerIsInPart` *(not included in the directory)*. If that's true, then it will open door(s). Otherwise, all closes.
 
-## 🎬 Demo
+# ⚙️ Door Handler
+```lua
+script['Run Door'].Event:Connect(function(DoorDictionaries: {DoorTypeHints.DoorDictionary}, doorOptions: DoorTypeHints.DoorOptions)
+	local DoorSound, doorSoundId, canCollide = doorOptions.DoorSound, doorOptions.doorSoundId, doorOptions.canCollide
+	PlayDoorSound:Fire(DoorSound, doorSoundId)
+	for _, DoorDictionary in ipairs(DoorDictionaries) do
+		SetCollidableParts:Fire(DoorDictionary.Door, canCollide)
+		DoorDictionary[(canCollide and 'Close Door') or 'Open Door']:Play()
+	end
+end)a
+```
+
+This is the main driver of the door animations. This is served as a centralized handler for all doors in the game. You can view separate functionalities from **Door Modules** script to see what's behind the scenes.
+
+# 🎬 Demo
 [![Watch the video](https://img.youtube.com/vi/xbzwaiTgjCg/hqdefault.jpg)](https://www.youtube.com/embed/xbzwaiTgjCg)

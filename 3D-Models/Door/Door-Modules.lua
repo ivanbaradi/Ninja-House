@@ -1,5 +1,5 @@
 --Roblox Services
-TweenService = game:GetService("TweenService")
+local TweenService = game:GetService("TweenService")
 
 --[[Animates opening or closing door
 

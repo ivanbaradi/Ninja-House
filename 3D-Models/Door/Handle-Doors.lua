@@ -1,59 +1,71 @@
 -- Roblox Services
-ReplicatedStorage = game.ReplicatedStorage
-ServerScriptService = game.ServerScriptService
-Players = game:GetService('Players')
-
--- Door Handler
-DoorHandler = ServerScriptService['Door Handler']
-
--- Door Handler Modules
-DoorModules = DoorHandler['Door Modules']
-AnimateDoor = DoorModules['Animate Door']
+local ServerScriptService = game.ServerScriptService
+local ReplicatedStorage = game.ReplicatedStorage
 
 -- Game Owner's Communications
-GameOwnerCommunications = ReplicatedStorage['Game Owner Settings'].Communications
+local GameOwnerCommunications = ReplicatedStorage['Game Owner Settings'].Communications
+local PlayerCanUseDoors = GameOwnerCommunications['Players Can Use Doors']
 
--- Animating Doors Model
-DoorOpener = script.Parent -- part for players to touch for opening the door
-Doors = DoorOpener.Parent
+-- Player Inside Part
+local PlayerInsidePart = ServerScriptService['Players Inside Part']
+local AnyPlayerIsInPart = PlayerInsidePart['Any Player Is In Part']
 
--- Prevents unneccessary functional executions
-debounce = false
+-- Door Handler
+local DoorHandler = ServerScriptService['Door Handler']
+local DoorModules = DoorHandler['Door Modules']
+local AnimateDoor = DoorModules['Animate Door']
 
--- Configuration
-Configuration = Doors.Configuration
-InsideDoorOpener = Configuration['Is Inside Door Opener']
+-- Door Type Hints
+local DoorTypeHints = require(DoorHandler['Door Type Hints'])
+
+-- Door Opener
+local DoorOpener = script.Parent
+local DoorSound = DoorOpener['Door Sound']
+
+-- Animating Door Model
+local Doors = DoorOpener.Parent
+
+-- Configurations
+local Configuration = Doors.Configuration
+local ClosingSoundId = Configuration['Closing Sound ID']
+local OpeningSoundId = Configuration['Opening Sound ID']
+local CurrentState = Configuration['Current State']
 
 -- Inserts all door models into array to set all their animations
-DoorDictionaries = {}
+local DoorDictionaries = {}
 for _, Door in pairs(Doors:GetChildren()) do
 	if not Door:IsA('Model') then continue end
 	table.insert(DoorDictionaries, {
 		Door = Door, 
-		OpenDoor = AnimateDoor:Invoke(Door.Hinge, Door.Configuration['Max Door Angle'].Value),
-		CloseDoor = AnimateDoor:Invoke(Door.Hinge, 0)
+		['Open Door'] = AnimateDoor:Invoke(Door.Hinge, Door.Configuration['Max Door Angle'].Value),
+		['Close Door'] = AnimateDoor:Invoke(Door.Hinge, 0)
 	})
 end
 
--- Triggers when a player approaches the door
-DoorOpener.Touched:Connect(function(part: BasePart) 
-	
-	if debounce then return end
+-- Runs indefinitely to perform door animations anytime
+while task.wait() do
 
-	debounce = true
+	--[[Handles door configurations
 	
-	local Character = part:FindFirstAncestorOfClass('Model')
-	local Player = Players:GetPlayerFromCharacter(Character)
+		TODO: Fix door type hints
 	
-	--Tells 'Door Handler' script to run all door animations
-	if Player and GameOwnerCommunications['Players Can Use Doors']:Invoke(Player) then
-		DoorHandler['Run Door']:Invoke(DoorDictionaries, Configuration, DoorOpener['Door Sound'])
+		Parameter(s):
+			newState: new state for CurrentState
+			doorOptions: door options to configure
+	]]
+	local function handle(newState: string, doorOptions: DoorTypeHints.DoorOptions)
+		if newState == CurrentState.Value then return end
+		DoorHandler['Run Door']:Fire(DoorDictionaries, doorOptions)
+		CurrentState.Value = newState
+		--print('Doors in this model are '..CurrentState.Value)
 	end
-	
-	debounce = false	
-end)
 
---Triggers when a player is leaving the door
-DoorOpener.TouchEnded:Connect(function() 
-	InsideDoorOpener.Value = false
-end)
+	-- Determines if any player is inside Door Opener
+	local AnyPlayerIsInDoorOpener = AnyPlayerIsInPart:Invoke(DoorOpener, PlayerCanUseDoors)
+
+	handle((AnyPlayerIsInDoorOpener and 'Opened') or 'Closed', {
+		DoorSound = DoorSound,
+		doorSoundId = (AnyPlayerIsInDoorOpener and OpeningSoundId.Value) or ClosingSoundId.Value,
+		canCollide = not AnyPlayerIsInDoorOpener -- this means false, which is meant to make door parts not collidable when opening it
+	})
+end
