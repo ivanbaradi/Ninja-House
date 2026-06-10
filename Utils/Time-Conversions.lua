@@ -2,50 +2,28 @@
 local TimeConversions = {}
 
 
---[[Converts seconds the following time format, MM:SS (Formerly named FormatNumberToTime)
+--[[Converts seconds to minutes and seconds time format (MM:SS)
 
 	Parameter(s):
-		timer => time in secs 
+		secs => seconds 
 	
 	Return(s):
-		formatted time => converted time in 'MM:SS' format
+		string => converted minutes and seconds time format (MM:SS)
 
 	Examples:
-		30 seconds => 0:30
-		105 seconds => 1:45
+		30 => 0:30
+		60 => 1:00
+		130 => 2:10
 ]]
-function TimeConversions.toTime(timer: number) : string
+function TimeConversions.toTime(secs: number) : string
 	
-	--[[Converts seconds to minutes and seconds
+	-- Add minutes
+	local min = math.floor(secs/60)
+	local res = (min >= 1 and min..':') or '0:'
 	
-		Parameter(s):
-			timer => number of secs
-		
-		Return(s):
-			string => converted time
-	]]
-	local function convertSecsToMinsSecs(timer: number)
-		--Minutes
-		local minutes = math.floor(timer/60)
-		--Seconds from 0 to 59
-		local seconds = timer % 60
-
-		if seconds >= 0 and seconds < 10 then
-			return minutes..':0'..seconds
-		end
-
-		return minutes..':'..seconds
-	end
-
-
-
-	if timer >= 0 and timer < 10 then
-		return '0:0'..timer
-	elseif timer >= 10 and timer < 60 then
-		return '0:'..timer
-	end
-
-	return convertSecsToMinsSecs(timer)
+	-- Add seconds (now ranges from 0 to 59 seconds)
+	secs %= 60
+	return (secs >= 10 and res..secs) or res..'0'..secs
 end
 
 
@@ -53,7 +31,7 @@ end
 --[[Converts the time from 24HR to 12HR format
 
 	Parameter(s):
-		from24hr: 24HR time format
+		_24Hr: 24HR time format
 
 	Return(s):
 		string: converted 12HR time format, HH:MM meridiem
@@ -64,11 +42,11 @@ end
 		12:30 => 12:30PM
 		13:15 => 3:15PM
 ]]
-function TimeConversions.to12Hr(from24hr: string) : string
+function TimeConversions.to12Hr(_24Hr: string) : string
 	
 	-- Gets hour and minute marks from 24HR format
-	local oldHr = tonumber(string.sub(from24hr, 1, 2))
-	local min = tonumber(string.sub(from24hr, 4, 5))
+	local oldHr = tonumber(string.sub(_24Hr, 1, 2))
+	local min = tonumber(string.sub(_24Hr, 4, 5))
 	min = (min < 10 and '0'..min) or min
 	
 	-- Configures meridiem
@@ -76,8 +54,8 @@ function TimeConversions.to12Hr(from24hr: string) : string
 	local meridiem = (isAM and 'AM') or 'PM'
 	
 	-- Configures hour mark from 12HR format
-	local newHr = ((oldHr == 0 or oldHr == 12) and 12) or (isAM and oldHr) or oldHr-12
-	return string.format('%s:%s%s', newHr, min, meridiem)
+	local newHr = ((oldHr == 0 or oldHr == 12) and 12) or oldHr % 12
+	return string.format('%s:%s %s', newHr, min, meridiem)
 end
 
 
@@ -85,7 +63,7 @@ end
 --[[Converts the time from 12HR to 24HR format
 
 	Parameter(s):
-		from12hr: 12HR time format
+		_12Hr: 12HR time format
 
 	Return(s):
 		string: converted 24HR time format, HH:MM meridiem
@@ -96,17 +74,17 @@ end
 		12:30PM => 12:30
 		3:15PM => 13:15
 ]]
-function TimeConversions.to24Hr(from12hr: string) : string
+function TimeConversions.to24Hr(_12Hr: string) : string
 		
 	-- Gets hour mark from 24HR format
-	local meridiem = string.sub(from12hr, -2)
-	local hrIsTwoDigit = string.len(from12hr) == 7
-	local oldHr = tonumber(string.sub(from12hr, 1, (hrIsTwoDigit and 2) or 1))
+	local meridiem = string.sub(_12Hr, -2)
+	local hrIsTwoDigit = string.len(_12Hr) == 7
+	local oldHr = tonumber(string.sub(_12Hr, 1, (hrIsTwoDigit and 2) or 1))
 	local newHr = (meridiem == 'PM' and oldHr ~= 12 and oldHr+12) or (meridiem == 'AM' and oldHr == 12 and '00') or oldHr
 	
 	-- Gets minute mark from 12HR format
 	local start = (hrIsTwoDigit and 4) or 3 
-	local min = string.sub(from12hr, (hrIsTwoDigit and 4) or 3, start+1)
+	local min = string.sub(_12Hr, (hrIsTwoDigit and 4) or 3, start+1)
 	
 	return string.format('%s:%s', newHr, min)
 end
