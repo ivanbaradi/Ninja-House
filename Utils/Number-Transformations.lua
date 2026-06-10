@@ -1,60 +1,47 @@
 local NumberTransformations = {}
 
---[[Adds commas to the number
+--[[Inserts commas to the number
 
 	Parameter(s):
-		number => value that needs commas and greater than
+		number: number with or without decimal point
+		precision: representation of how decimal values are expressed (optional)
 	
 	Return(s):
-		string => number with commas
+		string: number with commas
+		
+	Example(s):
+		10 => 10
+		1000 => 1,000
+	   -20000 => -20,000
+		500000.35 => 500,000.35
 ]]
-function NumberTransformations.addCommasToNumber(number: number) : string
-
-	--No commas needed if -1,000 < number < 1,000
-	if number > -1000 and number < 1000 then return number end
-
-	--Number with commas (String)
-	local formattedNumber = tostring(number)
-	--Counter (when to place commas)
-	local counter = 1
-	--End Index (Stops at the second leftest digit)
-	local endIndex = 2
-	if number < 0 then endIndex = 3 end
-
-	--Reversely loops through a number (String)
-	for i = string.len(formattedNumber), endIndex, -1 do
-
-		--Adds comma
+function NumberTransformations.insertCommas(num: number, precision: string?) : string
+	
+	-- Converts number to string
+	local numStr = (precision and string.format(precision, num)) or tostring(num)
+	
+	-- Exits if number is a 3-digit or less value
+	local isNegative = num < 0
+	if (isNegative and #numStr < 5) or #numStr < 4 then return numStr end
+	
+	-- Searches for decimal point from the number
+	local decimalIndex = string.find(numStr, '%.')
+	
+	-- Initializes start and stop indices for inserting commas
+	local start = (decimalIndex and decimalIndex-1) or string.len(numStr)
+	local stop = (isNegative and 3) or 2
+	local counter = 1 -- used for adding commas
+	
+	-- Iterates reversely to add commas between values
+	for i = start, stop, -1 do
 		if counter % 3 == 0 then 
-			formattedNumber = string.sub(formattedNumber, 1, i-1)..','..string.sub(formattedNumber, i)
+			numStr = string.sub(numStr, 1, i-1)..','..string.sub(numStr, i)
 		end
 
 		counter += 1
-	end
-
-	return formattedNumber
-end
-
---[[Adds commas to floating-point values
-
-	Parameter(s):
-		num => floating-point number to add commas too
-		precision => values to add after the decimal point
+	end 
 	
-	Return(s):
-		string => floating-point number with commas
-]]
-function NumberTransformations.addCommasToFloats(num : number, precision: string) : string
-
-	--Formats the string to include values after decimal
-	local formattedStr = string.format(precision, num)
-	--Index to the last value
-	local i = string.len(formattedStr)
-
-	--Reversely loops values until it references a period
-	while string.sub(formattedStr, i, i) ~= '.' do i -= 1 end
-
-	return NumberTransformations.addCommasToNumber(tonumber(string.sub(formattedStr, 1, i-1)))..string.sub(formattedStr, i)
+	return numStr
 end
 
 return NumberTransformations
