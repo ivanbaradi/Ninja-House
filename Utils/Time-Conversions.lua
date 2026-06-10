@@ -33,7 +33,7 @@ end
 		_24Hr: 24HR time format
 
 	Return(s):
-		string: converted 12HR time format, HH:MM meridiem
+		string: converted 12HR time format (HH:MM meridiem)
 
 	Example(s): 
 		00:00 => 12:00AM
@@ -65,7 +65,7 @@ end
 		_12Hr: 12HR time format
 
 	Return(s):
-		string: converted 24HR time format, HH:MM meridiem
+		string: converted 24HR time format (HH:MM)
 
 	Example(s): 
 		12:00AM => 00:00
