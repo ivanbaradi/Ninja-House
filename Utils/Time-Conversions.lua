@@ -18,8 +18,7 @@ local TimeConversions = {}
 function TimeConversions.toTime(secs: number) : string
 	
 	-- Add minutes
-	local min = math.floor(secs/60)
-	local res = (min >= 1 and min..':') or '0:'
+	local res = math.floor(secs/60)..':'
 	
 	-- Add seconds (now ranges from 0 to 59 seconds)
 	secs %= 60
