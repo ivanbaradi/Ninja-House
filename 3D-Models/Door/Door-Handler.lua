@@ -3,7 +3,6 @@ local DoorTypeHints = require(script['Door Type Hints'])
 
 -- Door Modules
 local DoorModules = script['Door Modules']
-local AnimateDoor = DoorModules['Animate Door']
 local PlayDoorSound = DoorModules['Play Door Sound']
 local SetCollidableParts = DoorModules['Set Collidable Parts']
 
