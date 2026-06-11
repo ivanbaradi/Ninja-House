@@ -77,7 +77,7 @@ function TimeConversions.to24Hr(_12Hr: string) : string
 		
 	-- Gets hour mark from 24HR format
 	local meridiem = string.sub(_12Hr, -2)
-	local hrIsTwoDigit = string.len(_12Hr) == 7
+	local hrIsTwoDigit = #_12Hr == 7
 	local oldHr = tonumber(string.sub(_12Hr, 1, (hrIsTwoDigit and 2) or 1))
 	local newHr = (meridiem == 'PM' and oldHr ~= 12 and oldHr+12) or (meridiem == 'AM' and oldHr == 12 and '00') or oldHr
 	

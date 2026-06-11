@@ -28,7 +28,7 @@ function NumberTransformations.insertCommas(num: number, precision: string?) : s
 	local decimalIndex = string.find(numStr, '%.')
 	
 	-- Initializes start and stop indices for inserting commas
-	local start = (decimalIndex and decimalIndex-1) or string.len(numStr)
+	local start = (decimalIndex and decimalIndex-1) or #numStr
 	local stop = (isNegative and 3) or 2
 	local counter = 1 -- used for adding commas
 	
