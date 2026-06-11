@@ -35,10 +35,7 @@ function StringTransformations.leftTrim(str: string) : string
 		
 	local i = 1
 	
-	while i <= #str do
-		if string.sub(str, i, i) ~= " " then break end
-		i += 1
-	end
+	while string.sub(str, i, i) == " " and i <= #str do i += 1 end
 		
 	return string.sub(str, i)
 end
@@ -57,10 +54,7 @@ function StringTransformations.rightTrim(str: string) : string
 
 	local i = #str
 
-	while i >= 1 do
-		if string.sub(str, i, i) ~= " " then break end
-		i -= 1
-	end
+	while string.sub(str, i, i) == " " and i >= 1 do i -= 1 end
 
 	return string.sub(str, 1, i)
 end
