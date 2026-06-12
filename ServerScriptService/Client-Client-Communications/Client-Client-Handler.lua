@@ -1,12 +1,12 @@
 --[[Client-to-Client Communications enables the interactions between 
-	the client, server, and another client ]]
+	the client, server, and another client.]]
 
 -- Roblox Services
-ReplicatedStorage = game.ReplicatedStorage
+local ReplicatedStorage = game.ReplicatedStorage
 
 -- Client to Client Communications Systems
-ClientClientEvent = ReplicatedStorage['Client-Client Communications']
-ClientClientFunction = ReplicatedStorage['Client-Client Communications 2']
+local ClientClientEvent = ReplicatedStorage['Client-Client Communications']
+local ClientClientFunction = ReplicatedStorage['Client-Client Communications 2']
 
 
 --[[Handles a one-way passage between the client, server, and another client.
@@ -14,10 +14,12 @@ ClientClientFunction = ReplicatedStorage['Client-Client Communications 2']
 	Parameter(s):
 		player => player who triggered this event 
 		remoteEventName => name of the remote event to trigger
-		object => any data 
+		object => any data (optional)
+		folderName => folder's name from ReplicatedStorage where the Remote Event is at (optional)
 ]]
-ClientClientEvent.OnServerEvent:Connect(function(player: Player, remoteEventName: string, object: any)	
-	ReplicatedStorage[remoteEventName]:FireClient(player, object)
+ClientClientEvent.OnServerEvent:Connect(function(player: Player, remoteEventName: string, object: any?, folderName: string?)	
+	local Location = (folderName and ReplicatedStorage[folderName]) or ReplicatedStorage
+	Location[remoteEventName]:FireClient(player, object)
 end)
 
 
@@ -29,8 +31,10 @@ end)
 	Parameter(s):
 		player => player who invoked this function 
 		remoteFuncName => name of the remote function to invoke
-		object => any data
+		object => any data (optional)
+		folderName => folder's name from ReplicatedStorage where the Remote Event is at (optional)
 ]]
-ClientClientFunction.OnServerInvoke = function(player: Player, remoteFuncName: string, object: any)
-	return ReplicatedStorage[remoteFuncName]:InvokeClient(player, object)
+ClientClientFunction.OnServerInvoke = function(player: Player, remoteFuncName: string, object: any?, folderName: string?)
+	local Location = (folderName and ReplicatedStorage[folderName]) or ReplicatedStorage
+	return Location[remoteFuncName]:InvokeClient(player, object)	
 end
