@@ -49,8 +49,7 @@ function TimeConversions.to12Hr(_24Hr: string) : string
 	min = (min < 10 and '0'..min) or min
 	
 	-- Configures meridiem
-	local isAM = oldHr >= 0 and oldHr < 12
-	local meridiem = (isAM and 'AM') or 'PM'
+	local meridiem = (oldHr >= 0 and oldHr < 12 and 'AM') or 'PM'
 	
 	-- Configures hour mark from 12HR format
 	local newHr = ((oldHr == 0 or oldHr == 12) and 12) or oldHr % 12
@@ -83,7 +82,7 @@ function TimeConversions.to24Hr(_12Hr: string) : string
 	
 	-- Gets minute mark from 12HR format
 	local start = (hrIsTwoDigit and 4) or 3 
-	local min = string.sub(_12Hr, (hrIsTwoDigit and 4) or 3, start+1)
+	local min = string.sub(_12Hr, start, start+1)
 	
 	return string.format('%s:%s', newHr, min)
 end
