@@ -1,6 +1,5 @@
 -- Roblox Services
 local Players = game:GetService('Players')
-local ReplicatedStorage = game.ReplicatedStorage
 
 --[[Checks if there are any players that are inside a specific part
 
